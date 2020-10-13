@@ -80,7 +80,7 @@ export default class Game {
         const index: number = Math.floor(Math.random() * 7); //отримаємо випадковий індекс від 1 до 7
         const type: string = 'IJLOSTZ'[index];   //тип (назва) фігури
 
-        const piece = {x: 0, y: 0, blocks:[] as any};
+        const piece = {x: 0, y: 0, blocks: [] as any};
 
         switch (type) {
             case 'I':
@@ -138,7 +138,7 @@ export default class Game {
                 throw new Error('Невідомий тип фігури');
         }
         piece.x = Math.floor((10 - piece.blocks[0].length) / 2); //зміщаємо фігуру в центр
-        piece.y = -2;
+        piece.y = 0;
         return piece;
     }
 
