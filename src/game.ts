@@ -1,16 +1,28 @@
+import {TMap} from "./Types";
+
+type TPiece = {x: number, y: number, blocks: number[][]};
+export type TGameState = {
+    score: number,
+    level: number,
+    lines: number,
+    nextPiece: TPiece,
+    playField: number[][],
+    isGameOver: boolean
+};
+
 export default class Game {
 
-    static points = {
+    static points: TMap<string, number> = {
         '1':  40,
         '2': 100,
         '3': 300,
         '4': 1200,
     };
 
+
     private score: number = 0; //отримані бали
     private lines: number = 0; //видалені лінії
     private topOut = false; //дійшли до верху поля
-    private _level: number = 0; // номер рівня
     private playField = this.createPlayField(); //ігрове поле
     private activePiece = this.createPiece(); //активна фігура
     private nextPiece = this.createPiece(); //наступна фігура
@@ -22,10 +34,10 @@ export default class Game {
 
     //повернути стан гри
     get level(): number {
-        return Math.floor(this.lines * 0.1);
+        return Math.floor(this.lines * 0.1); // номер рівня
     }
 
-    getState(): object {
+    getState(): TGameState {
         const playField = this.createPlayField();
         const {y: pieceY, x: pieceX, blocks} = this.activePiece;
         //копіюємо ігрове поле
@@ -47,7 +59,7 @@ export default class Game {
 
         return {
             score: this.score,
-            level: this._level,
+            level: this.level,
             lines: this.lines,
             nextPiece: this.nextPiece,
             playField,
@@ -76,11 +88,12 @@ export default class Game {
     }
 
     //створити фігуру
-    createPiece(): any {
+    createPiece(): TPiece {
         const index: number = Math.floor(Math.random() * 7); //отримаємо випадковий індекс від 1 до 7
         const type: string = 'IJLOSTZ'[index];   //тип (назва) фігури
 
-        const piece = {x: 0, y: 0, blocks: [] as any};
+        const piece: TPiece = {x: 0, y: 0, blocks: []};
+
 
         switch (type) {
             case 'I':

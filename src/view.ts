@@ -1,36 +1,40 @@
+import {TGameState} from "./game";
+import {TMap} from "./Types";
+
+type TColors = TMap<number, string>;
+
 export default class View {
 
-    static colors = {
-        '1': 'cyan',
-        '2': 'blue',
-        '3': 'orange',
-        '4': 'yellow',
-        '5': 'green',
-        '6': 'purple',
-        '7': 'red'
+    static colors: TColors = {
+        1: 'cyan',
+        2: 'blue',
+        3: 'orange',
+        4: 'yellow',
+        5: 'green',
+        6: 'purple',
+        7: 'red'
     };
 
     private element: any;//дом. елемент
-    private width: number; //ширина
-    private height: number; //висота
+    private readonly width: number; //ширина
+    private readonly height: number; //висота
     private rows: number; //кількість рядів
-    private column:number; //кількість колонок
-    private canvas: HTMLCanvasElement;
-    private context: CanvasRenderingContext2D | null;
-    private blockWidth: number; //ширина блока
-    private blockHeight: number;//висота блока
-    private playFieldBorderWidth: number;
-    private playFieldX: number;
-    private playFieldY: number;
-    private playFieldWidth: number;
-    private playFieldHeight: number;
-    private playFieldInnerWidth: number;
-    private playFieldInnerHeight: number;
-    private panelX: number;
-    private panelY: number;
+    private column: number; //кількість колонок
+    private readonly canvas: HTMLCanvasElement;
+    private context: CanvasRenderingContext2D;
+    private readonly blockWidth: number; //ширина блока
+    private readonly blockHeight: number;//висота блока
+    private readonly playFieldBorderWidth: number;
+    private readonly playFieldX: number;
+    private readonly playFieldY: number;
+    private readonly playFieldWidth: number;
+    private readonly playFieldHeight: number;
+    private readonly playFieldInnerWidth: number;
+    private readonly playFieldInnerHeight: number;
+    private readonly panelX: number;
+    private readonly panelY: number;
     private panelWidth: number;
     private panelHeight: number;
-
 
     constructor(element: any, width: number, height: number, rows: number, column: number) {
         this.element = element;
@@ -42,8 +46,12 @@ export default class View {
         this.canvas = document.createElement('canvas'); //полотно
         this.canvas.width = this.width;//ширина полотна
         this.canvas.height = this.height;//висота полотна
-        this.context = this.canvas.getContext('2d');//контекст для малювання
-
+        const ctx = this.canvas.getContext('2d');//контекст для малювання
+        if (ctx) {
+            this.context = ctx;
+        } else {
+            throw "context not found";
+        }
         this.playFieldBorderWidth = 4;//ширина границі
         this.playFieldX = this.playFieldBorderWidth;//координати початку ігрового поля x
         this.playFieldY = this.playFieldBorderWidth;//координати початку ігрового поля y
@@ -63,106 +71,82 @@ export default class View {
         this.element.appendChild(this.canvas);//додаємо контекст, який створили
     }
     //малюємо загальне поле
-    // @ts-ignore
-    renderMainScreen(state) {
+
+    renderMainScreen(state: TGameState) {
         this.clearScreen(); //очищаємо
         this.renderPlayField(state);  //малюємо ігрове поле
-        // @ts-ignore
         this.renderPanel(state); //малюєм бокову панель
     }
     //малюємо стартовий екран
     renderStartScreen() {
-        // @ts-ignore
-        this.context?.fillStyle = 'white';
-        // @ts-ignore
-        this.context?.font = '18px "Press Start 2P"';
-        // @ts-ignore
-        this.context?.textAlign = 'center';
-        // @ts-ignore
-        this.context?.textBaseline = 'middle';
-        this.context?.fillText('Press ENTER to Start', this.width / 2, this.height / 2);
+        this.context.fillStyle = 'white';
+        this.context.font = '18px "Press Start 2P"';
+        this.context.textAlign = 'center';
+        this.context.textBaseline = 'middle';
+        this.context.fillText('Press ENTER to Start', this.width / 2, this.height / 2);
     }
-
     //малюємо екран паузи
     renderPauseScreen() {
-        // @ts-ignore
-        this.context?.fillStyle = 'rgba(0,0,0,0.75)'//затемнення основного екрану
-        this.context?.fillRect(0,0,this.width, this.height);
-        // @ts-ignore
-        this.context?.fillStyle = 'white';
-        // @ts-ignore
-        this.context?.font = '18px "Press Start 2P"';
-        // @ts-ignore
-        this.context?.textAlign = 'center';
-        // @ts-ignore
-        this.context?.textBaseline = 'middle';
-        this.context?.fillText('Press ENTER to Resume', this.width / 2, this.height / 2);
+        this.context.fillStyle = 'rgba(0,0,0,0.75)'//затемнення основного екрану
+        this.context.fillRect(0,0,this.width, this.height);
+        this.context.fillStyle = 'white';
+        this.context.font = '18px "Press Start 2P"';
+        this.context.textAlign = 'center';
+        this.context.textBaseline = 'middle';
+        this.context.fillText('Press ENTER to Resume', this.width / 2, this.height / 2);
     }
     //малюємо екран закінчення гри
-    // @ts-ignore
-    renderEndScreen({ score }) {
+
+    renderEndScreen({ score }:TGameState) {
         this.clearScreen(); //очищуємо екран
-        // @ts-ignore
-        this.context?.fillStyle = 'white';
-        // @ts-ignore
-        this.context?.font = '18px "Press Start 2P"';
-        // @ts-ignore
-        this.context?.textAlign = 'center';
-        // @ts-ignore
-        this.context?.textBaseline = 'middle';
-        this.context?.fillText('GAME OVER', this.width / 2, this.height / 2 - 48);
-        this.context?.fillText(`Score ${score}`, this.width / 2, this.height / 2);
-        this.context?.fillText('Press ENTER to Restart', this.width / 2, this.height / 2 + 48);
+
+        this.context.fillStyle = 'white';
+        this.context.font = '18px "Press Start 2P"';
+        this.context.textAlign = 'center';
+        this.context.textBaseline = 'middle';
+        this.context.fillText('GAME OVER', this.width / 2, this.height / 2 - 48);
+        this.context.fillText(`Score ${score}`, this.width / 2, this.height / 2);
+        this.context.fillText('Press ENTER to Restart', this.width / 2, this.height / 2 + 48);
     }
     //очищаємо полотно
     clearScreen() {
-        // @ts-ignore
         this.context.clearRect(0,0,this.width,this.height); //очищаємо поле від фігури
     }
     //малюємо ігрове поле
-    // @ts-ignore
-    renderPlayField({ playField }) {
+    renderPlayField({ playField }:TGameState) {
         for (let y = 0; y < playField.length; y++) {
             const line = playField[y]; //константа для зручності
 
             for (let x = 0; x < line.length; x++) {
                 const block =  line[x]; //отримуємо хожну чарунку в ігровому полі
                 if (block) { //якщо чарунка не пуста
-                   // @ts-ignore
                     this.renderBlock( //малюємо блок з наступною фігурою
                         this.playFieldX + (x * this.blockWidth),
                         this.playFieldY +  (y * this.blockHeight),
                         this.blockWidth,
                         this.blockHeight,
-                        // @ts-ignore
+
                         View.colors[block]);
                 }
             }
         }
         //малюємо межу ігрового поля
-        // @ts-ignore
-        this.context?.strokeStyle = 'white'; //колір білий
-        // @ts-ignore
-        this.context?.lineWidth = this.playFieldBorderWidth;//ширина лінії
-        this.context?.strokeRect(0,0,this.playFieldWidth, this.playFieldHeight);
+        this.context.strokeStyle = 'white'; //колір білий
+        this.context.lineWidth = this.playFieldBorderWidth;//ширина лінії
+        this.context.strokeRect(0,0,this.playFieldWidth, this.playFieldHeight);
     }
 
 
     //малюємо бокову панель
-    // @ts-ignore
-    renderPanel({level, score, lines, nextPiece}) {
-        // @ts-ignore
+    renderPanel({level, score, lines, nextPiece}:TGameState) {
         this.context.textAlign = 'start'; //форматуємо по лівому краю
-        // @ts-ignore
         this.context.textBaseline = 'top';//форматуємо по верхньому краю
-        // @ts-ignore
         this.context.fillStyle = 'white';//колір тексту
-        // @ts-ignore
         this.context.font = '14px "Press Start 2P"';//шрифт
-        this.context?.fillText(`score: ${score}`,this.panelX,this.panelY);//виводимо текст на плолтно
-        this.context?.fillText(`Lines: ${lines}`,this.panelX,this.panelY + 24);//виводимо текст на плолтно
-        this.context?.fillText(`Level: ${level}`,this.panelX,this.panelY + 48);//виводимо текст на плолтно
-        this.context?.fillText('Next:',this.panelX,this.panelY + 96);//виводимо текст на плолтно
+        this.context.fillText(`score: ${score}`,this.panelX,this.panelY);//виводимо текст на плолтно
+        this.context.fillText(`Lines: ${lines}`,this.panelX,this.panelY + 24);//виводимо текст на плолтно
+        this.context.fillText(`Level: ${level}`,this.panelX,this.panelY + 48);//виводимо текст на плолтно
+        this.context.fillText('Next:',this.panelX,this.panelY + 96);//виводимо текст на плолтно
 
         for (let y = 0; y < nextPiece.blocks.length; y++) {//виводимо фігуру
             for (let x = 0; x < nextPiece.blocks[y].length; x++) {
@@ -173,26 +157,19 @@ export default class View {
                         this.panelY + 100 + (y * this.blockHeight * 0.5), //зміщуємо фігуру додатково на 100px
                         this.blockWidth * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
                         this.blockHeight * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
-                        // @ts-ignore
                         View.colors[block]);
                 }
             }
         }
 
     }
-
     //малюємо блок
     renderBlock(x: number, y: number, width: number, height: number, color: string): void {
 
-        // @ts-ignore
         this.context.fillStyle = color; //виводимо її червоною
-        // @ts-ignore
         this.context.strokeStyle = 'black';//в чорній обводці
-        // @ts-ignore
         this.context.lineWidth = 2; //товщиною 2px
-        // @ts-ignore
         this.context.fillRect(x,y,width,height); //виводимо прямокутник
-        // @ts-ignore
         this.context.strokeRect(x,y,width,height); //обводимо прямокутник
     }
 }

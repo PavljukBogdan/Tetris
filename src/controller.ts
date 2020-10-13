@@ -1,8 +1,11 @@
+import Game from "./game";
+import View from "./view";
+
 export default class Controller {
 
 
-    private game: any;
-    private view: any;
+    private game: Game;
+    private view: View;
     private intervalId: any;
     private isPlaying: boolean;
 
