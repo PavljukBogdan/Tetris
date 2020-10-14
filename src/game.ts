@@ -26,9 +26,11 @@ export default class Game {
     private playField = this.createPlayField(); //ігрове поле
     private activePiece = this.createPiece(); //активна фігура
     private nextPiece = this.createPiece(); //наступна фігура
+    private ROWS = 20;
+    private COLUMNS = 10;
 
     constructor() {
-        this.reset();
+        this.reset(); //запускаємо гру
     }
 
 
@@ -150,7 +152,7 @@ export default class Game {
             default:
                 throw new Error('Невідомий тип фігури');
         }
-        piece.x = Math.floor((10 - piece.blocks[0].length) / 2); //зміщаємо фігуру в центр
+        piece.x = Math.floor((this.COLUMNS - piece.blocks[0].length) / 2); //зміщаємо фігуру в центр
         piece.y = 0;
         return piece;
     }
@@ -248,8 +250,8 @@ export default class Game {
     }
     //видаляємо зібрані лінії
     clearLines(): number {
-        const rows = 20;
-        const columns = 10;
+        const rows = this.ROWS;
+        const columns = this.COLUMNS;
         let lines:number[] = [];
 
         for (let y = rows - 1; y >= 0; y--) {
@@ -260,7 +262,7 @@ export default class Game {
                 }
             }
             if (numberOfBlocks === 0) {
-                break; //заверша цикл
+                break; //завершаємо цикл
             } else if (numberOfBlocks < columns) {
                 continue; //переходимо на наступну ітерацію
             } else if (numberOfBlocks === columns) {
@@ -277,10 +279,9 @@ export default class Game {
     //зміна рахунку
     updateScore(clearLines: number): void {
         if (clearLines > 0) {
-            // @ts-ignore
-            this.score += Game.points[clearLines] * (this._level + 1);//збільшуємо очки згідно ст блоку
+            this.score += Game.points[clearLines] * (this.level + 1);//збільшуємо очки згідно ст блоку
             this.lines += clearLines; //збільшуємо кількість видалених ліній
-            console.log(this.score, this.lines);
+            //console.log(this.score, this.lines);
         }
     }
     //оновлюємо стан фігур
