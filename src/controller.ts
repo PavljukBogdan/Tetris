@@ -18,7 +18,7 @@ export default class Controller {
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.addEventListener('keyup',this.handleKeyUp.bind(this));
 
-        this.view.renderStartScreen();
+        this.view.renderStartScreen(this.isPlaying);
     }
     //оновлення поля
     update(): void {
