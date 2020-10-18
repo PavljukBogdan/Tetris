@@ -50,9 +50,11 @@ export default class Controller {
         if (state.isGameOver) {
             this.view.renderEndScreen(state);
         } else if (!this.isPlaying) { //якщо ми не вгрі
-            this.view.renderPauseScreen();
+            this.view.renderPauseScreen(this.isPlaying);
         } else  {
             this.view.renderMainScreen(state); //оновлюємо зображення екрана
+            this.view.renderStartScreen(this.isPlaying);
+            this.view.renderPauseScreen(this.isPlaying);
         }
     }
 

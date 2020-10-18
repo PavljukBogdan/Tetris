@@ -1,20 +1,19 @@
 import game, {TGameState} from "./game";
 import {TMap} from "./Types";
 import  * as PIXI from 'pixi.js'
-import Game from "./game";
 
-type TColors = TMap<number, string>;
+type TColors = TMap<number, number>;
 
 export default class View {
 
     static colors: TColors = {
-        1: 'cyan',
-        2: 'blue',
-        3: 'orange',
-        4: 'yellow',
-        5: 'green',
-        6: 'purple',
-        7: 'red'
+        1: 0x00FFFF,    //'cyan',
+        2: 0x0000FF,    //'blue',
+        3: 0xFFA500,    //'orange',
+        4: 0xFFFF00,    //'yellow',
+        5: 0x008000,    //'green',
+        6: 0x800080,    //'purple',
+        7: 0xFF0000     //'red'
     };
 
     private element: any;//дом. елемент
@@ -41,7 +40,24 @@ export default class View {
     // @ts-ignore
     private graphics: PIXI.Graphics;
     // @ts-ignore
-    private container: PIXI.Container;
+    private containerTetro: PIXI.Container;
+    private styleScreen = new PIXI.TextStyle({
+        fontFamily: 'Press Start 2P',
+        fontSize: 18,
+        //fontStyle: 'italic',
+        fontWeight: 'bold',
+        fill: ['#ffffff', '#ffffff'], // gradient
+        stroke: '#4a1850',
+        strokeThickness: 5,
+        dropShadow: true,
+        dropShadowColor: '#000000',
+        dropShadowBlur: 4,
+        dropShadowAngle: Math.PI / 6,
+        dropShadowDistance: 6,
+        wordWrap: true,
+        wordWrapWidth: 440,
+        lineJoin: 'round'
+    });
 
     constructor(element: any, width: number, height: number, rows: number, column: number) {
         this.element = element;
@@ -53,19 +69,9 @@ export default class View {
         this.app = new PIXI.Application({
             width: this.width,//ширина полотна
             height: this.height, //висота полотна
-            backgroundColor: 0x1099bb, //колір ігрового полотна
+            backgroundColor: 0x999999, //колір ігрового полотна
             resolution: window.devicePixelRatio || 1,
         });
-
-        // this.canvas = document.createElement('canvas'); //полотно
-        // this.canvas.width = this.width;//ширина полотна
-        // this.canvas.height = this.height;//висота полотна
-        // const ctx = this.canvas.getContext('2d');//контекст для малювання
-        // if (ctx) {
-        //     this.context = ctx;
-        // } else {
-        //     throw "context not found";
-        // }
         this.playFieldBorderWidth = 4;//ширина границі
         this.playFieldX = this.playFieldBorderWidth;//координати початку ігрового поля x
         this.playFieldY = this.playFieldBorderWidth;//координати початку ігрового поля y
@@ -82,115 +88,107 @@ export default class View {
         this.panelWidth = this.width / 3;//ширина панелі
         this.panelHeight = this.height;//висота панелі
 
+        const app1 = new PIXI.Application({
+            width: this.playFieldWidth + 3,//ширина полотна
+            height: this.playFieldHeight + 3, //висота полотна
+            backgroundColor: 0xFF0000, //колір ігрового полотна
+            resolution: window.devicePixelRatio || 1,
+        });
+
         //this.element.appendChild(this.canvas);//додаємо контекст, який створили
         document.body.appendChild(this.app.view);
     }
     //малюємо загальне поле
     renderMainScreen(state: TGameState) {
-       // this.clearScreen(); //очищаємо
+
+        //this.clearScreen(state); //очищаємо
         this.renderPlayField(state);  //малюємо ігрове поле
-        this.clearScreen(); //очищаємо
+        this.clearScreen(state); //очищаємо
         this.renderPanel(state); //малюєм бокову панель
     }
     //малюємо стартовий екран
     renderStartScreen(isGameOver: boolean) {
-        const style = new PIXI.TextStyle({
-            fontFamily: 'Arial',
-            fontSize: 36,
-            fontStyle: 'italic',
-            fontWeight: 'bold',
-            fill: ['#ffffff', '#00ff99'], // gradient
-            stroke: '#4a1850',
-            strokeThickness: 5,
-            dropShadow: true,
-            dropShadowColor: '#000000',
-            dropShadowBlur: 4,
-            dropShadowAngle: Math.PI / 6,
-            dropShadowDistance: 6,
-            wordWrap: true,
-            wordWrapWidth: 440,
-            lineJoin: 'round'
-        });
 
-        const richText = new PIXI.Text('Press ENTER to Start', style);
+        const richText = new PIXI.Text('Press ENTER to Start', this.styleScreen);
         richText.x = 50;
-        richText.y = 220;
+        richText.y = 280;
 
         const container = new PIXI.Container();
-
+        container.name = 'welcomeText';
         container.addChild(richText);
 
         if (!isGameOver) {
             this.app.stage.addChild(container);
         } else {
-            this.app.stage.removeChild(container);
+                this.app.stage.removeChild(this.app.stage.getChildByName('welcomeText'));
         }
-
-
-        // this.context.fillStyle = 'white';
-        // this.context.font = '18px "Press Start 2P"';
-        // this.context.textAlign = 'center';
-        // this.context.textBaseline = 'middle';
-        // this.context.fillText('Press ENTER to Start', this.width / 2, this.height / 2);
     }
     //малюємо екран паузи
-    renderPauseScreen() {
+    renderPauseScreen(isGameOver: boolean) {
 
-        // this.context.fillStyle = 'rgba(0,0,0,0.75)'//затемнення основного екрану
-        // this.context.fillRect(0,0,this.width, this.height);
-        // this.context.fillStyle = 'white';
-        // this.context.font = '18px "Press Start 2P"';
-        // this.context.textAlign = 'center';
-        // this.context.textBaseline = 'middle';
-        // this.context.fillText('Press ENTER to Resume', this.width / 2, this.height / 2);
+        const richText = new PIXI.Text('Press ENTER to Resume', this.styleScreen);
+        richText.x = 50;
+        richText.y = 280;
+
+        const container = new PIXI.Container();
+        container.name = 'pauseText';
+        container.addChild(richText);
+
+        if (!isGameOver) {
+            this.app.stage.addChild(container);
+        } else {
+            this.app.stage.removeChild(this.app.stage.getChildByName('pauseText'));
+        }
     }
     //малюємо екран закінчення гри
 
-    renderEndScreen({ score }:TGameState) {
-        this.clearScreen(); //очищуємо екран
+    renderEndScreen({score, isGameOver}: TGameState) {
+        const scoreText = new PIXI.Text(`Score ${score}`, this.styleScreen);
+        scoreText.x = 150;
+        scoreText.y = 280;
+        const restartText = new PIXI.Text('Press ENTER to Restart',this.styleScreen);
+        restartText.x = 50;
+        restartText.y = 320;
 
-        // this.context.fillStyle = 'white';
-        // this.context.font = '18px "Press Start 2P"';
-        // this.context.textAlign = 'center';
-        // this.context.textBaseline = 'middle';
-        // this.context.fillText('GAME OVER', this.width / 2, this.height / 2 - 48);
-        // this.context.fillText(`Score ${score}`, this.width / 2, this.height / 2);
-        // this.context.fillText('Press ENTER to Restart', this.width / 2, this.height / 2 + 48);
-    }
+        const containerScore = new PIXI.Container();
+        containerScore.name = 'scoreText';
+        containerScore.addChild(scoreText);
 
-    pixiText(str:string, isGameOver: boolean): void {
-        const style = new PIXI.TextStyle({
-            fontFamily: 'Arial',
-            fontSize: 36,
-            fontStyle: 'italic',
-            fontWeight: 'bold',
-            fill: ['#ffffff', '#00ff99'], // gradient
-            stroke: '#4a1850',
-            strokeThickness: 5,
-            dropShadow: true,
-            dropShadowColor: '#000000',
-            dropShadowBlur: 4,
-            dropShadowAngle: Math.PI / 6,
-            dropShadowDistance: 6,
-            wordWrap: true,
-            wordWrapWidth: 440,
-            lineJoin: 'round'
-        });
+        const containerRestart = new PIXI.Container();
+        containerRestart.name = 'restartText';
+        containerRestart.addChild(restartText);
 
-        const richText = new PIXI.Text(str, style);
-        richText.x = 50;
-        richText.y = 220;
-        if (!isGameOver) {
-            this.app.stage.addChild(richText);
+        if (isGameOver) {
+            this.app.stage.addChild(containerScore);
+            this.app.stage.addChild(containerRestart);
         } else {
-            this.app.stage.removeChild(richText);
+                this.app.stage.removeChild(this.app.stage.getChildByName('scoreText'));
+                this.app.stage.removeChild(this.app.stage.getChildByName('restartText'));
+            console.log('dell')
         }
     }
+
     //очищаємо полотно
-    clearScreen() {
-        let index = this.container.getChildIndex(this.graphics); //отримую індекс даного елемента в контейнері
-        this.container.removeChildAt(index);
-        // this.context.clearRect(0,0,this.width,this.height); //очищаємо поле від фігури
+    clearScreen({ playField }:TGameState) {
+
+        for (let y = 0; y < playField.length; y++) {
+            const line = playField[y]; //константа для зручності
+            for (let x = 0; x < line.length; x++) {
+                const block =  line[x]; //отримуємо хожну чарунку в ігровому полі
+                    this.app.stage.removeChild(this.containerTetro.getChildByName('blackBlock'));
+                    this.app.stage.removeChild(this.containerTetro.getChildByName('blockTetro'));
+                }
+        }
+
+        // this.app.stage.removeChild(this.containerTetro.getChildByName('blackBlock'));
+        // console.log("blackBlock " + this.app.stage.removeChild(this.containerTetro.getChildByName('blackBlock')));
+
+
+            //this.app.stage.removeChild(this.container.getChildByName('blackBlock'));
+        //this.container.removeChild(this.container.getChildByName('block'));
+        //console.log("clear block")
+         //this.context.clearRect(0,0,this.width,this.height); //очищаємо поле від фігури
+
     }
     //малюємо ігрове поле
     renderPlayField({ playField }:TGameState) {
@@ -205,28 +203,58 @@ export default class View {
                         this.playFieldY +  (y * this.blockHeight),
                         this.blockWidth,
                         this.blockHeight,
-
-                        View.colors[block]);
+                        View.colors[block],
+                        0x000000);
+                    this.app.stage.removeChild(this.containerTetro.getChildByName('blackBlock'));
+                } else {
+                    this.renderBlock( //малюємо блок з наступною фігурою
+                        this.playFieldX + (x * this.blockWidth),
+                        this.playFieldY +  (y * this.blockHeight),
+                        this.blockWidth,
+                        this.blockHeight,
+                        0x000000,
+                        0x000000);
+                    this.containerTetro.name = 'blackBlock';
+                    this.app.stage.removeChild(this.containerTetro.getChildByName('blockTetro'));
                 }
+                //this.clearScreen();
+                //this.app.stage.removeChild(this.container.getChildByName('blackBlock'));
+                //console.log(this.app.stage.removeChild(this.container.getChildByName('blackBlock')));
+                //this.app.stage.removeChild(this.container.getChildByName('blockTetro'));
+                //console.log(this.app.stage.removeChild(this.container.getChildByName('blockTetro')));
             }
         }
+
         //малюємо межу ігрового поля
         // this.context.strokeStyle = 'white'; //колір білий
         // this.context.lineWidth = this.playFieldBorderWidth;//ширина лінії
         // this.context.strokeRect(0,0,this.playFieldWidth, this.playFieldHeight);
     }
 
+    pixiTextPanel(text: string, x: number, y: number) {
+        const style= new PIXI.TextStyle({
+            fontFamily: 'Arial',
+            fontSize: 14,
+            fill: ['#ffffff'], // gradient
+
+        });
+        const scoreText = new PIXI.Text(text,style);
+        scoreText.x = x;
+        scoreText.y = y;
+        const container = new PIXI.Container();
+        container.name = 'textPanel';
+        container.addChild(scoreText);
+        this.app.stage.addChild(container);
+    }
 
     //малюємо бокову панель
     renderPanel({level, score, lines, nextPiece}:TGameState) {
-        // this.context.textAlign = 'start'; //форматуємо по лівому краю
-        // this.context.textBaseline = 'top';//форматуємо по верхньому краю
-        // this.context.fillStyle = 'white';//колір тексту
-        // this.context.font = '14px "Press Start 2P"';//шрифт
-        // this.context.fillText(`score: ${score}`,this.panelX,this.panelY);//виводимо текст на плолтно
-        // this.context.fillText(`Lines: ${lines}`,this.panelX,this.panelY + 24);//виводимо текст на плолтно
-        // this.context.fillText(`Level: ${level}`,this.panelX,this.panelY + 48);//виводимо текст на плолтно
-        // this.context.fillText('Next:',this.panelX,this.panelY + 96);//виводимо текст на плолтно
+        const x = 325;
+
+        this.pixiTextPanel('Next:',x,75);
+        this.pixiTextPanel(`Lines: ${lines}`,x,200);
+        this.pixiTextPanel(`Score ${score}`,x,250);
+        this.pixiTextPanel(`Level: ${level}`,x,300);
 
         for (let y = 0; y < nextPiece.blocks.length; y++) {//виводимо фігуру
             for (let x = 0; x < nextPiece.blocks[y].length; x++) {
@@ -237,26 +265,37 @@ export default class View {
                         this.panelY + 100 + (y * this.blockHeight * 0.5), //зміщуємо фігуру додатково на 100px
                         this.blockWidth * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
                         this.blockHeight * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
-                        View.colors[block]);
+                        View.colors[block],
+                        0x999999);
+                } else {
+                    this.renderBlock( //малюємо блок з наступною фігурою
+                        this.panelX + (x * this.blockWidth * 0.5), //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
+                        this.panelY + 100 + (y * this.blockHeight * 0.5), //зміщуємо фігуру додатково на 100px
+                        this.blockWidth * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
+                        this.blockHeight * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
+                        0x999999,
+                        0x999999);
                 }
+                this.app.stage.removeChild(this.containerTetro.getChildByName('blackBlock'));
+                this.app.stage.removeChild(this.containerTetro.getChildByName('blockTetro'));
             }
         }
 
     }
     //малюємо блок
-    renderBlock(x: number, y: number, width: number, height: number, color: string): void {
+    renderBlock(x: number, y: number, width: number, height: number, color: number, colorLine: number): void {
 
         this.graphics = new PIXI.Graphics();
-        this.container = new PIXI.Container();
-
+        this.containerTetro = new PIXI.Container();
 // Rectangle + line style 1
-        this.graphics.lineStyle(2, 0xFEEB77, 1);
-        this.graphics.beginFill(0x650A5A);
+        this.graphics.lineStyle(2, colorLine, 1);
+        this.graphics.beginFill(color);
         this.graphics.drawRect(x, y, width, height);
         this.graphics.endFill();
 
-        this.container.addChild(this.graphics);
-        this.app.stage.addChild(this.container);
+         this.containerTetro.addChild(this.graphics);
+         this.containerTetro.name = 'blockTetro';
+         this.app.stage.addChild(this.containerTetro);
 
         // this.context.fillStyle = color; //виводимо її червоною
         // this.context.strokeStyle = 'black';//в чорній обводці

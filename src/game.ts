@@ -39,7 +39,7 @@ export default class Game {
         return Math.floor(this.lines * 0.1); // номер рівня
     }
 
-    getState(): TGameState {
+    public getState(): TGameState {
         const playField = this.createPlayField();
         const {y: pieceY, x: pieceX, blocks} = this.activePiece;
         //копіюємо ігрове поле
