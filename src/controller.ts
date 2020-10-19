@@ -21,44 +21,47 @@ export default class Controller {
         this.view.renderStartScreen(this.isPlaying);
     }
     //оновлення поля
-    update(): void {
+    private update(): void {
         this.game.movePieceDown();//запускаємо фігуру вниз
         this.updateView();
     }
 
-    play(): void {
+    private play(): void {
         this.isPlaying = true; //прапор ми у грі
         this.startTimer(); //запускаємо таймер
         this.updateView();
     }
 
-    pause(): void {
+    private pause(): void {
         this.isPlaying = false; //прапор ми не в грі
         this.stopTimer(); //зупиняємо таймер
         this.updateView();
     }
 
-    reset(): void {
+    private reset(): void {
         this.game.reset();
         this.play()
 
     }
 
-    updateView(): void {
+    private updateView(): void {
         const state = this.game.getState();
 
         if (state.isGameOver) {
-            this.view.renderEndScreen(state);
+            this.view.renderEndScreen(state); //додаємо екран закінчення гри
+            this.view.removeStartScreen();
         } else if (!this.isPlaying) { //якщо ми не вгрі
             this.view.renderPauseScreen(this.isPlaying);
-        } else  {
+        } else {
             this.view.renderMainScreen(state); //оновлюємо зображення екрана
-            this.view.renderStartScreen(this.isPlaying);
-            this.view.renderPauseScreen(this.isPlaying);
+            this.view.removeStartScreen();
+            this.view.removePauseScreen();
+            this.view.removeEndScreen();
         }
+
     }
 
-    startTimer(): void { //запускаємо інтервал
+    private startTimer(): void { //запускаємо інтервал
         const speed = 1000 - (this.game.getState().level * 100);//швидкість гри
 
         if (!this.intervalId) {
@@ -68,14 +71,14 @@ export default class Controller {
         }
     }
 
-    stopTimer(): void { //очищаємо інтервал
+    private stopTimer(): void { //очищаємо інтервал
         if (this.intervalId) {
             clearInterval(this.intervalId);
             this.intervalId = null;
         }
     }
 
-    handleKeyDown(): void {
+    private handleKeyDown(): void {
         const state = this.game.getState();
         // @ts-ignore
         switch (event.keyCode) {
@@ -107,7 +110,7 @@ export default class Controller {
                 break;
         }
     }
-    handleKeyUp(event: { keyCode: any; }): void {
+    private handleKeyUp(event: { keyCode: any; }): void {
         switch (event.keyCode) {
             case 40:
                 this.startTimer();

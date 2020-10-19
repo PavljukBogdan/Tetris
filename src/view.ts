@@ -41,6 +41,8 @@ export default class View {
     private graphics: PIXI.Graphics;
     // @ts-ignore
     private containerTetro: PIXI.Container;
+    private containerStartScreen = new PIXI.Container(); //контейнр стартового екрану
+    private containerPanelText = new PIXI.Container()
     private styleScreen = new PIXI.TextStyle({
         fontFamily: 'Press Start 2P',
         fontSize: 18,
@@ -99,32 +101,32 @@ export default class View {
         document.body.appendChild(this.app.view);
     }
     //малюємо загальне поле
-    renderMainScreen(state: TGameState) {
-
+    public renderMainScreen(state: TGameState) {
         //this.clearScreen(state); //очищаємо
         this.renderPlayField(state);  //малюємо ігрове поле
         this.clearScreen(state); //очищаємо
         this.renderPanel(state); //малюєм бокову панель
+        this.app.stage.addChild(this.containerPanelText);
     }
     //малюємо стартовий екран
-    renderStartScreen(isGameOver: boolean) {
+    public renderStartScreen(isGameOver: boolean): void {
 
         const richText = new PIXI.Text('Press ENTER to Start', this.styleScreen);
         richText.x = 50;
         richText.y = 280;
 
-        const container = new PIXI.Container();
-        container.name = 'welcomeText';
-        container.addChild(richText);
+        this.containerStartScreen = new PIXI.Container();
+        this.containerStartScreen.name = 'welcomeText';
+        this.containerStartScreen.addChild(richText);
 
-        if (!isGameOver) {
-            this.app.stage.addChild(container);
-        } else {
-                this.app.stage.removeChild(this.app.stage.getChildByName('welcomeText'));
-        }
+            this.app.stage.addChild(this.containerStartScreen);
+
+    }
+    public removeStartScreen() {
+        this.app.stage.removeChild(this.app.stage.getChildByName('welcomeText'));
     }
     //малюємо екран паузи
-    renderPauseScreen(isGameOver: boolean) {
+    public renderPauseScreen(isGameOver: boolean) {
 
         const richText = new PIXI.Text('Press ENTER to Resume', this.styleScreen);
         richText.x = 50;
@@ -134,15 +136,14 @@ export default class View {
         container.name = 'pauseText';
         container.addChild(richText);
 
-        if (!isGameOver) {
             this.app.stage.addChild(container);
-        } else {
-            this.app.stage.removeChild(this.app.stage.getChildByName('pauseText'));
-        }
+    }
+
+    public removePauseScreen() {
+        this.app.stage.removeChild(this.app.stage.getChildByName('pauseText'));
     }
     //малюємо екран закінчення гри
-
-    renderEndScreen({score, isGameOver}: TGameState) {
+    public renderEndScreen({score, isGameOver}: TGameState) {
         const scoreText = new PIXI.Text(`Score ${score}`, this.styleScreen);
         scoreText.x = 150;
         scoreText.y = 280;
@@ -158,18 +159,16 @@ export default class View {
         containerRestart.name = 'restartText';
         containerRestart.addChild(restartText);
 
-        if (isGameOver) {
             this.app.stage.addChild(containerScore);
             this.app.stage.addChild(containerRestart);
-        } else {
-                this.app.stage.removeChild(this.app.stage.getChildByName('scoreText'));
-                this.app.stage.removeChild(this.app.stage.getChildByName('restartText'));
-            console.log('dell')
-        }
     }
 
+    public removeEndScreen() {
+        this.app.stage.removeChild(this.app.stage.getChildByName('scoreText'));
+        this.app.stage.removeChild(this.app.stage.getChildByName('restartText'));
+    }
     //очищаємо полотно
-    clearScreen({ playField }:TGameState) {
+    private clearScreen({ playField }:TGameState) {
 
         for (let y = 0; y < playField.length; y++) {
             const line = playField[y]; //константа для зручності
@@ -191,12 +190,13 @@ export default class View {
 
     }
     //малюємо ігрове поле
-    renderPlayField({ playField }:TGameState) {
+    private renderPlayField({ playField }:TGameState) {
 
         for (let y = 0; y < playField.length; y++) {
             const line = playField[y]; //константа для зручності
             for (let x = 0; x < line.length; x++) {
                 const block =  line[x]; //отримуємо хожну чарунку в ігровому полі
+
                 if (block) { //якщо чарунка не пуста
                     this.renderBlock( //малюємо блок з наступною фігурою
                         this.playFieldX + (x * this.blockWidth),
@@ -231,30 +231,39 @@ export default class View {
         // this.context.strokeRect(0,0,this.playFieldWidth, this.playFieldHeight);
     }
 
-    pixiTextPanel(text: string, x: number, y: number) {
+    private pixiTextPanel(text: string, x: number, y: number) {
         const style= new PIXI.TextStyle({
             fontFamily: 'Arial',
             fontSize: 14,
             fill: ['#ffffff'], // gradient
-
         });
         const scoreText = new PIXI.Text(text,style);
         scoreText.x = x;
         scoreText.y = y;
-        const container = new PIXI.Container();
-        container.name = 'textPanel';
-        container.addChild(scoreText);
-        this.app.stage.addChild(container);
+        this.containerPanelText.name = 'textPanel';
+        this.containerPanelText.addChild(scoreText);
+    }
+
+    public removePixiTextPanel(): void {
+        const length = this.containerPanelText.children.length - 4;
+        //this.containerPanelText.updateTransform();
+        // for (let i = 0; i < length; i++) {
+        //     this.app.stage.removeChild(this.app.stage.getChildByName('textPanel'));
+        // }
+        this.app.stage.removeChild(this.app.stage.getChildByName('textPanel'));
     }
 
     //малюємо бокову панель
-    renderPanel({level, score, lines, nextPiece}:TGameState) {
+    private renderPanel({level, score, lines, nextPiece}:TGameState) {
         const x = 325;
+
+        const container = new PIXI.Container();
 
         this.pixiTextPanel('Next:',x,75);
         this.pixiTextPanel(`Lines: ${lines}`,x,200);
         this.pixiTextPanel(`Score ${score}`,x,250);
         this.pixiTextPanel(`Level: ${level}`,x,300);
+
 
         for (let y = 0; y < nextPiece.blocks.length; y++) {//виводимо фігуру
             for (let x = 0; x < nextPiece.blocks[y].length; x++) {
@@ -283,7 +292,7 @@ export default class View {
 
     }
     //малюємо блок
-    renderBlock(x: number, y: number, width: number, height: number, color: number, colorLine: number): void {
+    private renderBlock(x: number, y: number, width: number, height: number, color: number, colorLine: number): void {
 
         this.graphics = new PIXI.Graphics();
         this.containerTetro = new PIXI.Container();

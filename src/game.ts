@@ -19,7 +19,6 @@ export default class Game {
         '4': 1200,
     };
 
-
     private score: number = 0; //отримані бали
     private lines: number = 0; //видалені лінії
     private topOut = false; //дійшли до верху поля
@@ -35,7 +34,7 @@ export default class Game {
 
 
     //повернути стан гри
-    get level(): number {
+    private get level(): number {
         return Math.floor(this.lines * 0.1); // номер рівня
     }
 
@@ -53,7 +52,6 @@ export default class Game {
         for (let y = 0; y < blocks.length; y++) {
             for (let x = 0; x < blocks[y].length; x++) {
                 if (blocks[y][x]) { //якщо в чарунці існує елемент blocks[y][x]
-
                     playField[pieceY + y][pieceX + x] = blocks[y][x]; //копіюємо фігуру на поле
                 }
             }
@@ -69,7 +67,7 @@ export default class Game {
         };
     }
 
-    reset(): void {
+    public reset(): void {
         this.score = 0; //отримані бали
         this.lines = 0; //видалені лінії
         this.topOut = false; //дійшли до верху поля
@@ -78,7 +76,7 @@ export default class Game {
         this.nextPiece = this.createPiece(); //наступна фігура
     }
 
-    createPlayField(): number[][] {
+    public createPlayField(): number[][] {
         const playField:number[][] = [];
         for (let y = 0; y < 20; y++) {
             playField[y] = [];
@@ -90,7 +88,7 @@ export default class Game {
     }
 
     //створити фігуру
-    createPiece(): TPiece {
+    public createPiece(): TPiece {
         const index: number = Math.floor(Math.random() * 7); //отримаємо випадковий індекс від 1 до 7
         const type: string = 'IJLOSTZ'[index];   //тип (назва) фігури
 
@@ -157,21 +155,21 @@ export default class Game {
         return piece;
     }
 
-    movePieceLeft(): void { //зміщення ліворуч
+    public movePieceLeft(): void { //зміщення ліворуч
         this.activePiece.x -= 1;
         if (this.hasCollision()) { //перевірка виходу за межі поля
             this.activePiece.x += 1; //якщо вийшли повертаємось назад
         }
     }
 
-    movePieceRight(): void { //зміщення праворуч
+    public movePieceRight(): void { //зміщення праворуч
         this.activePiece.x += 1;
         if (this.hasCollision()) { //перевірка виходу за межі поля
             this.activePiece.x -= 1; //якщо вийшли повертаємось назад
         }
     }
 
-    movePieceDown(): void { //зміщення вниз
+    public movePieceDown(): void { //зміщення вниз
         if (this.topOut) return; //якщо дійшли до верху то виходимо
         this.activePiece.y += 1;
 
@@ -188,14 +186,14 @@ export default class Game {
         }
     }
 
-    rotatePiece(): void { //поворот фігури
+    public rotatePiece(): void { //поворот фігури
         this.rotateBlocks();
         if (this.hasCollision()) {
             this.rotateBlocks(false);
         }
     }
 
-    rotateBlocks(clockwise: boolean = true): void {//поворот фігури
+    private rotateBlocks(clockwise: boolean = true): void {//поворот фігури
     const blocks = this.activePiece.blocks; //доступ до блоку
     const length = blocks.length;
     const x = Math.floor(length / 2);
@@ -220,7 +218,7 @@ export default class Game {
     }
 
 
-    hasCollision(): boolean { //перевірка за межі поля
+    private hasCollision(): boolean { //перевірка за межі поля
         const { y: pieceY, x: pieceX, blocks } = this.activePiece;
 
         for (let y = 0; y < blocks.length; y++) {
@@ -237,7 +235,7 @@ export default class Game {
         return false;
     }
 
-    lockPiece(): void { //фіксуємо значення фігури на ігровому полі
+    private lockPiece(): void { //фіксуємо значення фігури на ігровому полі
         const { y: pieceY, x: pieceX, blocks } = this.activePiece;
 
         for (let y = 0; y < blocks.length; y++) {
@@ -249,7 +247,7 @@ export default class Game {
         }
     }
     //видаляємо зібрані лінії
-    clearLines(): number {
+    private clearLines(): number {
         const rows = this.ROWS;
         const columns = this.COLUMNS;
         let lines:number[] = [];
@@ -277,7 +275,7 @@ export default class Game {
     }
 
     //зміна рахунку
-    updateScore(clearLines: number): void {
+    private updateScore(clearLines: number): void {
         if (clearLines > 0) {
             this.score += Game.points[clearLines] * (this.level + 1);//збільшуємо очки згідно ст блоку
             this.lines += clearLines; //збільшуємо кількість видалених ліній
@@ -285,7 +283,7 @@ export default class Game {
         }
     }
     //оновлюємо стан фігур
-    updatePieces(): void {
+    private updatePieces(): void {
         this.activePiece = this.nextPiece; //міняємо активну на наступну фігуру
         this.nextPiece = this.createPiece(); //створюємо наступну фігуру
     }
