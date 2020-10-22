@@ -1,19 +1,22 @@
 import game, {TGameState} from "./game";
 import {TMap} from "./Types";
 import  * as PIXI from 'pixi.js'
+import {Enums} from "./enums";
 
 type TColors = TMap<number, number>;
 
 export default class View {
 
     static colors: TColors = {
-        1: 0x00FFFF,    //'cyan',
-        2: 0x0000FF,    //'blue',
-        3: 0xFFA500,    //'orange',
-        4: 0xFFFF00,    //'yellow',
-        5: 0x008000,    //'green',
-        6: 0x800080,    //'purple',
-        7: 0xFF0000     //'red'
+        0: Enums.black,
+        1: Enums.cyan,
+        2: Enums.blue,
+        3: Enums.orange,
+        4: Enums.yellow,
+        5: Enums.green,
+        6: Enums.purple,
+        7: Enums.red,
+        8: Enums.gray
     };
 
     private element: any;//дом. елемент
@@ -71,7 +74,7 @@ export default class View {
         this.app = new PIXI.Application({
             width: this.width,//ширина полотна
             height: this.height, //висота полотна
-            backgroundColor: 0x999999, //колір ігрового полотна
+            backgroundColor: View.colors[8], //колір ігрового полотна
             resolution: window.devicePixelRatio || 1,
         });
         this.playFieldBorderWidth = 4;//ширина границі
@@ -93,7 +96,7 @@ export default class View {
         const app1 = new PIXI.Application({
             width: this.playFieldWidth + 3,//ширина полотна
             height: this.playFieldHeight + 3, //висота полотна
-            backgroundColor: 0xFF0000, //колір ігрового полотна
+            backgroundColor: View.colors[8], //колір ігрового полотна
             resolution: window.devicePixelRatio || 1,
         });
 
@@ -204,7 +207,7 @@ export default class View {
                         this.blockWidth,
                         this.blockHeight,
                         View.colors[block],
-                        0x000000);
+                        View.colors[0]);
                     this.app.stage.removeChild(this.containerTetro.getChildByName('blackBlock'));
                 } else {
                     this.renderBlock( //малюємо блок з наступною фігурою
@@ -212,8 +215,8 @@ export default class View {
                         this.playFieldY +  (y * this.blockHeight),
                         this.blockWidth,
                         this.blockHeight,
-                        0x000000,
-                        0x000000);
+                        View.colors[0],
+                        View.colors[0]);
                     this.containerTetro.name = 'blackBlock';
                     this.app.stage.removeChild(this.containerTetro.getChildByName('blockTetro'));
                 }
@@ -275,15 +278,15 @@ export default class View {
                         this.blockWidth * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
                         this.blockHeight * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
                         View.colors[block],
-                        0x999999);
+                        View.colors[8]);
                 } else {
                     this.renderBlock( //малюємо блок з наступною фігурою
                         this.panelX + (x * this.blockWidth * 0.5), //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
                         this.panelY + 100 + (y * this.blockHeight * 0.5), //зміщуємо фігуру додатково на 100px
                         this.blockWidth * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
                         this.blockHeight * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
-                        0x999999,
-                        0x999999);
+                        View.colors[8],
+                        View.colors[8]);
                 }
                 this.app.stage.removeChild(this.containerTetro.getChildByName('blackBlock'));
                 this.app.stage.removeChild(this.containerTetro.getChildByName('blockTetro'));

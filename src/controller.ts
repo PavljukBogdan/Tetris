@@ -17,7 +17,7 @@ export default class Controller {
 
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.addEventListener('keyup',this.handleKeyUp.bind(this));
-
+        //запускаємо стартовий екран
         this.view.renderStartScreen(this.isPlaying);
     }
     //оновлення поля
@@ -25,25 +25,24 @@ export default class Controller {
         this.game.movePieceDown();//запускаємо фігуру вниз
         this.updateView();
     }
-
+    //старт гри
     private play(): void {
         this.isPlaying = true; //прапор ми у грі
         this.startTimer(); //запускаємо таймер
         this.updateView();
     }
-
+    //пауза
     private pause(): void {
         this.isPlaying = false; //прапор ми не в грі
         this.stopTimer(); //зупиняємо таймер
         this.updateView();
     }
-
+    //перезавантаження
     private reset(): void {
         this.game.reset();
         this.play()
-
     }
-
+    //оновлення поля
     private updateView(): void {
         const state = this.game.getState();
 

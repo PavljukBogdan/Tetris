@@ -1,4 +1,5 @@
 import {TMap} from "./Types";
+import {Points} from "./enums";
 
 type TPiece = {x: number, y: number, blocks: number[][]};
 export type TGameState = {
@@ -13,10 +14,10 @@ export type TGameState = {
 export default class Game {
 
     static points: TMap<string, number> = {
-        '1':  40,
-        '2': 100,
-        '3': 300,
-        '4': 1200,
+        '1': Points.One,
+        '2': Points.Two,
+        '3': Points.Three,
+        '4': Points.Four,
     };
 
     private score: number = 0; //отримані бали
@@ -31,13 +32,11 @@ export default class Game {
     constructor() {
         this.reset(); //запускаємо гру
     }
-
-
     //повернути стан гри
     private get level(): number {
         return Math.floor(this.lines * 0.1); // номер рівня
     }
-
+    //отримати стан гри
     public getState(): TGameState {
         const playField = this.createPlayField();
         const {y: pieceY, x: pieceX, blocks} = this.activePiece;
@@ -84,16 +83,14 @@ export default class Game {
                 playField[y][x] = 0;
             }
         }
-        return playField;
+        return playField; //створюємо масив ігрового поля 10х20
     }
-
     //створити фігуру
     public createPiece(): TPiece {
         const index: number = Math.floor(Math.random() * 7); //отримаємо випадковий індекс від 1 до 7
         const type: string = 'IJLOSTZ'[index];   //тип (назва) фігури
 
         const piece: TPiece = {x: 0, y: 0, blocks: []};
-
 
         switch (type) {
             case 'I':
@@ -279,7 +276,6 @@ export default class Game {
         if (clearLines > 0) {
             this.score += Game.points[clearLines] * (this.level + 1);//збільшуємо очки згідно ст блоку
             this.lines += clearLines; //збільшуємо кількість видалених ліній
-            //console.log(this.score, this.lines);
         }
     }
     //оновлюємо стан фігур
