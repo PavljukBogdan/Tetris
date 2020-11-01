@@ -19,12 +19,3 @@ const controller = new Controller(game,view);
 window.game = game;
 window.view = view;
 window.controller = controller;
-
-// import MainPixi from "./mainPixi"
-//
-//     const mainPixi = new MainPixi();
-//
-//     mainPixi.renderRectangle();
-
-
-
