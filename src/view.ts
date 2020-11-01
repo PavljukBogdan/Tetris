@@ -49,8 +49,8 @@ export default class View {
         fill: "#212121",
         fontFamily: "Arial Black",
         fontSize: 30,
-        stroke: "#fafafa",
-        strokeThickness: 3
+        stroke: "#999999",
+        strokeThickness: 6
     });
     private _nextLabes: PIXI.Text;
     private _linesLabes: PIXI.Text;
@@ -62,6 +62,8 @@ export default class View {
     private restartText: PIXI.Text;
     private containerScore: PIXI.Container;
     private containerRestart: PIXI.Container;
+    private restartText2: PIXI.Text;
+    private containerRestart2: PIXI.Container;
 
     constructor(element: Element | null, width: number, height: number, rows: number, column: number) {
         this._element = element;
@@ -161,8 +163,6 @@ export default class View {
         this._app.stage.addChild(this.containerRestart2);
     }
     //малюємо екран закінчення гри
-    private restartText2: PIXI.Text;
-    private containerRestart2: PIXI.Container;
     private createEndScreen(): void {
         this.scoreText = new PIXI.Text('Score', this._styleScreen);
         this.scoreText.x = 90;
@@ -232,6 +232,7 @@ export default class View {
             }
         }
     }
+    //створити кубик
     private createBlock(x: number, y: number, block: number, name: string, scale: number, xField: number, yField: number):void {
         this._containerTetro = new PIXI.Container();
         this._containerTetro.addChild(
@@ -250,8 +251,8 @@ export default class View {
     private createPanelText(text: string, x: number, y: number): PIXI.Text {
         const style= new PIXI.TextStyle({
             fontFamily: 'Arial',
-            fontSize: 18,
-            fill: ['#ffffff'], // gradient
+            fontSize: 22,
+            fill: ['#212121'], // gradient
         });
         const textField = new PIXI.Text(text,style);
         textField.x = x;
@@ -263,7 +264,7 @@ export default class View {
     //створюємо бокову панель
     private createPanel(): void {
 
-        const x = 325; //координата х для розміщення елементів
+        const x = 340; //координата х для розміщення елементів
 
         this._nextLabes = this.createPanelText('Next:',x,75);
         this._linesLabes = this.createPanelText('Lines:',x,200);
@@ -285,7 +286,7 @@ export default class View {
                 const block = nextPiece.blocks[y][x];
 
                 if (block) {
-                    this.createBlock(x,y,block,'blockTetroPanel_',0.5,this._panelX,this._panelY + 100);
+                    this.createBlock(x,y,block,'blockTetroPanel_',0.5,this._panelX + 15,this._panelY + 110);
                 }
             }
         }

@@ -6,7 +6,7 @@ export enum Color {
     'yellow' = 0xFFFF00,    //'yellow',
     'green' = 0x008000,    //'green',
     'purple' = 0x800080,    //'purple',
-    'red' = 0xFF0000,     //'red'
+    'red' = 0xd21248,     //'red'
     'gray' = 0x999999
 }
 
