@@ -1,16 +1,16 @@
-import Game from "./game";
+import Model from "./model";
 import View from "./view";
 
 export default class Controller {
 
 
-    private _game: Game;
+    private _model: Model;
     private _view: View;
-    private _intervalId: any;
+    private _intervalId: number;
     private _isPlaying: boolean;
 
-    constructor(game: any, view: any) {
-     this._game = game;
+    constructor(model: Model, view: View) {
+     this._model = model;
      this._view = view;
      this._intervalId = null;
      this._isPlaying = false;
@@ -22,7 +22,7 @@ export default class Controller {
     }
     //оновлення поля
     private update(): void {
-        this._game.movePieceDown();//запускаємо фігуру вниз
+        this._model.movePieceDown();//запускаємо фігуру вниз
         this.updateView();
     }
     //старт гри
@@ -39,12 +39,12 @@ export default class Controller {
     }
     //перезавантаження
     private reset(): void {
-        this._game.reset();
+        this._model.reset();
         this.play()
     }
     //оновлення поля
     private updateView(): void {
-        const state = this._game.getState();
+        const state = this._model.getState();
 
         if (state.isGameOver) {
             this._view.renderEndScreen(state); //додаємо екран закінчення гри
@@ -59,29 +59,29 @@ export default class Controller {
         }
 
     }
-
-    private startTimer(): void { //запускаємо інтервал
-        const speed = 1000 - (this._game.getState().level * 100);//швидкість гри
+    //запускаємо інтервал
+    private startTimer(): void {
+        const speed = 1000 - (this._model.getState().level * 100);//швидкість гри
 
         if (!this._intervalId) {
             this._intervalId = setInterval(() =>  {
                 this.update();
-            },speed > 0 ? speed : 100);//максимальна швидкість 100мс
+            },Math.max(100,speed));//максимальна швидкість 100мс
         }
     }
-
-    private stopTimer(): void { //очищаємо інтервал
+    //очищаємо інтервал
+    private stopTimer(): void {
         if (this._intervalId) {
             clearInterval(this._intervalId);
             this._intervalId = null;
         }
     }
+    //кнопки керування
+    private handleKeyDown(e: KeyboardEvent): void {
+        const state = this._model.getState();
 
-    private handleKeyDown(): void {
-        const state = this._game.getState();
-        // @ts-ignore
-        switch (event.keyCode) {
-            case 13: //enter
+        switch (e.key) {
+            case 'Enter':
                 if (state.isGameOver) { //якщо гра закінчилась
                     this.reset(); //перезапускаємо
                 } else if (this._isPlaying) { //якщо в грі
@@ -90,28 +90,29 @@ export default class Controller {
                     this.play(); //гра працює
                 }
                 break;
-            case 37: //стрілка вліво
-                this._game.movePieceLeft(); //рухаємо фігуру вліво
+            case 'ArrowLeft': //стрілка вліво
+                this._model.movePieceLeft(); //рухаємо фігуру вліво
                 this.updateView(); //оновлюємо поле
                 break;
-            case 38: //стрілка вверх
-                this._game.rotatePiece(); //повернути фігуру
+            case 'ArrowUp': //стрілка вверх
+                this._model.rotatePiece(); //повернути фігуру
                 this.updateView(); //оновлюємо поле
                 break;
-            case 39: //стрілка вправо
-                this._game.movePieceRight(); //рухаємо фігуру вправо
+            case 'ArrowRight': //стрілка вправо
+                this._model.movePieceRight(); //рухаємо фігуру вправо
                 this.updateView(); // оновлюємо поле
                 break;
-            case 40: // стрілка вниз
+            case 'ArrowDown': // стрілка вниз
                 this.startTimer(); //запускаємо таймер
-                this._game.movePieceDown(); //рухаємо фігуру вниз
+                this._model.movePieceDown(); //рухаємо фігуру вниз
                 this.updateView(); //оновлюємо поле
                 break;
         }
     }
-    private handleKeyUp(event: { keyCode: number }): void {
-        switch (event.keyCode) {
-            case 40: //стрілка вниз
+
+    private handleKeyUp(e: KeyboardEvent): void {
+        switch (e.key) {
+            case 'ArrowDown': //стрілка вниз
                 this.startTimer(); //запускаємо таймер
                 break;
         }

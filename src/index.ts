@@ -1,10 +1,10 @@
-import Game from "./game";
+import Model from "./model";
 import View from "./view";
 import Controller from "./controller";
 
 declare global {
   interface Window {
-      game: Game;
+      game: Model;
       view: View;
       controller: Controller;
   }
@@ -12,7 +12,7 @@ declare global {
 
 const root = document.querySelector('#root');
 
-const game = new Game();
+const game = new Model();
 const view = new View(root,480,640,20,10);
 const controller = new Controller(game,view);
 

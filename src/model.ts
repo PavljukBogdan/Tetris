@@ -1,5 +1,5 @@
 import {TMap} from "./Types";
-import {Points} from "./enums";
+import {Points} from "./color";
 
 type TPiece = {x: number, y: number, blocks: number[][]};
     export type TGameState = {
@@ -11,7 +11,7 @@ type TPiece = {x: number, y: number, blocks: number[][]};
         isGameOver: boolean
     };
 
-export default class Game {
+export default class Model {
 
     static points: TMap<string, number> = {
         '1': Points.One,
@@ -29,7 +29,6 @@ export default class Game {
     private _ROWS = 20; // кількість рядків
     private _COLUMNS = 10; // кількість стовпців
 
-
     constructor() {
         this.reset(); //запускаємо гру
     }
@@ -44,7 +43,6 @@ export default class Game {
         //копіюємо ігрове поле
         for (let y = 0; y < this._playField.length; y++) {
             playField[y] = [];
-            //playField[y] = playField[y].concat(); //НЕ ПРАЦЮЄ
             for (let x = 0; x < this._playField[y].length; x++) {
                 playField[y][x] = this._playField[y][x];
             }
@@ -275,7 +273,7 @@ export default class Game {
     //зміна рахунку
     private updateScore(clearLines: number): void {
         if (clearLines > 0) {
-            this._score += Game.points[clearLines] * (this.level + 1);//збільшуємо очки згідно ст блоку
+            this._score += Model.points[clearLines] * (this.level + 1);//збільшуємо очки згідно ст блоку
             this._lines += clearLines; //збільшуємо кількість видалених ліній
         }
     }

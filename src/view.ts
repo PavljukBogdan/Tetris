@@ -1,22 +1,32 @@
-import game, {TGameState} from "./game";
+import game, {TGameState} from "./model";
 import {TMap} from "./Types";
 import  * as PIXI from 'pixi.js'
-import {Enums} from "./enums";
+import {Color} from "./color";
 
 type TColors = TMap <number, number>;
 
 export default class View {
 
-    static colors: TColors = {
-        0: Enums.black,
-        1: Enums.cyan,
-        2: Enums.blue,
-        3: Enums.orange,
-        4: Enums.yellow,
-        5: Enums.green,
-        6: Enums.purple,
-        7: Enums.red,
-        8: Enums.gray
+    static color = [
+        Color.black,
+        Color.cyan,
+        Color.blue,
+        Color.orange,
+        Color.yellow,
+        Color.green,
+        Color.purple,
+        Color.red,
+        Color.gray
+    ];
+
+    private playField = {
+        _playFieldBorderWidth: 0,
+        _playFieldX : 0,
+        _playFieldY : 0,
+        _playFieldWidth : 0,
+        _playFieldHeight : 0,
+        _playFieldInnerWidth : 0,
+        _playFieldInnerHeight : 0,
     };
 
     private _element: any;//дом. елемент
@@ -24,17 +34,10 @@ export default class View {
     private readonly _height: number; //висота
     private _rows: number; //кількість рядів
     private _column: number; //кількість колонок
-    private readonly _blockWidth: number; //ширина блока
-    private readonly _blockHeight: number;//висота блока
-    private readonly _playFieldBorderWidth: number;
-    private readonly _playFieldX: number;
-    private readonly _playFieldY: number;
-    private readonly _playFieldWidth: number;
-    private readonly _playFieldHeight: number;
-    private readonly _playFieldInnerWidth: number;
-    private readonly _playFieldInnerHeight: number;
-    private readonly _panelX: number;
-    private readonly _panelY: number;
+    private _blockWidth: number; //ширина блока
+    private _blockHeight: number;//висота блока
+    private _panelX: number;
+    private _panelY: number;
     private _panelWidth: number;
     private _panelHeight: number;
     private _app: PIXI.Application;
@@ -77,34 +80,33 @@ export default class View {
         this._rows = rows;
         this._column = column;
         this.init();
+    }
 
+    protected init(): void {
+        this.createPanel();
+        this.createEndScreen();
         this._app = new PIXI.Application({
             width: this._width,//ширина полотна
             height: this._height, //висота полотна
-            backgroundColor: View.colors[8], //колір ігрового полотна
+            backgroundColor: View.color[8], //колір ігрового полотна
             resolution: window.devicePixelRatio || 1,
         });
-        this._playFieldBorderWidth = 4;//ширина границі
-        this._playFieldX = this._playFieldBorderWidth;//координати початку ігрового поля x
-        this._playFieldY = this._playFieldBorderWidth;//координати початку ігрового поля y
-        this._playFieldWidth = this._width * 2 / 3//Ширина ігрового поля
-        this._playFieldHeight = this._height//Висота ігрового поля
-        this._playFieldInnerWidth = this._playFieldWidth - this._playFieldBorderWidth * 2;//Внутрішня ширина ігрового поля
-        this._playFieldInnerHeight = this._playFieldHeight - this._playFieldBorderWidth * 2;// Внутрішня висота ігрового поля
+        this.playField._playFieldBorderWidth = 4;//ширина границі
+        this.playField._playFieldX = this.playField._playFieldBorderWidth;//координати початку ігрового поля x
+        this.playField._playFieldY = this.playField._playFieldBorderWidth;//координати початку ігрового поля y
+        this.playField._playFieldWidth = this._width * 2 / 3//Ширина ігрового поля
+        this.playField._playFieldHeight = this._height//Висота ігрового поля
+        this.playField._playFieldInnerWidth = this.playField._playFieldWidth - this.playField._playFieldBorderWidth * 2;//Внутрішня ширина ігрового поля
+        this.playField._playFieldInnerHeight = this.playField._playFieldHeight - this.playField._playFieldBorderWidth * 2;// Внутрішня висота ігрового поля
 
-        this._blockWidth = this._playFieldInnerWidth/ column; //ширина блока
-        this._blockHeight = this._playFieldInnerHeight / rows; //висота блока
+        this._blockWidth = this.playField._playFieldInnerWidth/ this._column; //ширина блока
+        this._blockHeight = this.playField._playFieldInnerHeight / this._rows; //висота блока
 
-        this._panelX = this._playFieldWidth + 10;
+        this._panelX = this.playField._playFieldWidth + 10;
         this._panelY = 0;
         this._panelWidth = this._width / 3;//ширина панелі
         this._panelHeight = this._height;//висота панелі
         document.body.appendChild(this._app.view); //додаємо полотно, яке створили
-    }
-
-    private init(): void {
-        this.createPanel();
-        this.createEndScreen();
     }
     //малюємо загальне поле
     public renderMainScreen(state: TGameState): void {
@@ -211,58 +213,50 @@ export default class View {
             for (let x = 0; x < line.length; x++) {
                 const block =  line[x]; //отримуємо хожну чарунку в ігровому полі
                 if (block) { //якщо чарунка не пуста
-                    this._containerTetro = new PIXI.Container();
-                    this._containerTetro.addChild(
-                    this.renderBlock( //малюємо блок з наступною фігурою
-                        this._playFieldX + (x * this._blockWidth),
-                        this._playFieldY +  (y * this._blockHeight),
-                        this._blockWidth,
-                        this._blockHeight,
-                        View.colors[block],
-                        View.colors[8]));
-                    this._containerTetro.name = 'blockTetro_' + y + '_' + x;
-                    this._gameFieldGr[y][x] = this._containerTetro;
-                    this._app.stage.addChild(this._gameFieldGr[y][x]);
+                    this.createBlock(x,y,block,'blockTetro_',1,this.playField._playFieldX,this.playField._playFieldY);
                 } else {
-                    this._containerTetro = new PIXI.Container();
-                    this._containerTetro.addChild(
-                    this.renderBlock( //малюємо блок з наступною фігурою
-                        this._playFieldX + (x * this._blockWidth),
-                        this._playFieldY +  (y * this._blockHeight),
-                        this._blockWidth,
-                        this._blockHeight,
-                        View.colors[0],
-                        View.colors[8]));
-                    this._containerTetro.name = 'blackTetro_' + y + '_' + x;
-                    this._gameFieldGr[y][x] = this._containerTetro;
-                    this._app.stage.addChild(this._gameFieldGr[y][x]);
+                    this.createBlock(x,y,block,'blackTetro_',1,this.playField._playFieldX,this.playField._playFieldY);
                 }
             }
         }
     }
+    private createBlock(x: number, y: number, block: number, name: string, scale: number, xField: number, yField: number):void {
+        this._containerTetro = new PIXI.Container();
+        this._containerTetro.addChild(
+            this.renderBlock( //малюємо блок з наступною фігурою
+                xField + (x * this._blockWidth * scale),
+                yField +  (y * this._blockHeight * scale),
+                this._blockWidth * scale,
+                this._blockHeight * scale,
+                View.color[block],
+                View.color[8]));
+        this._containerTetro.name = name + y + '_' + x;
+        this._gameFieldGr[y][x] = this._containerTetro;
+        this._app.stage.addChild(this._gameFieldGr[y][x]);
+    }
     // створюємо піксі текст
-    private pixiTextPanel(text: string, x: number, y: number): PIXI.Text {
+    private createPanelText(text: string, x: number, y: number): PIXI.Text {
         const style= new PIXI.TextStyle({
             fontFamily: 'Arial',
             fontSize: 18,
             fill: ['#ffffff'], // gradient
         });
-        const scoreText = new PIXI.Text(text,style);
-        scoreText.x = x;
-        scoreText.y = y;
+        const textField = new PIXI.Text(text,style);
+        textField.x = x;
+        textField.y = y;
         this._containerPanelText.name = 'textPanel';
-        this._containerPanelText.addChild(scoreText);
-        return scoreText;
+        this._containerPanelText.addChild(textField);
+        return textField;
     }
     //створюємо бокову панель
     private createPanel(): void {
 
         const x = 325; //координата х для розміщення елементів
 
-        this._nextLabes = this.pixiTextPanel('Next:',x,75);
-        this._linesLabes = this.pixiTextPanel('Lines:',x,200);
-        this._scoreLabes = this.pixiTextPanel('Score',x,250);
-        this._levelLabes = this.pixiTextPanel('Level',x,300);
+        this._nextLabes = this.createPanelText('Next:',x,75);
+        this._linesLabes = this.createPanelText('Lines:',x,200);
+        this._scoreLabes = this.createPanelText('Score',x,250);
+        this._levelLabes = this.createPanelText('Level',x,300);
     }
     //малюємо бокову панель
     private renderPanel({level, score, lines, nextPiece}:TGameState): void {
@@ -279,18 +273,7 @@ export default class View {
                 const block = nextPiece.blocks[y][x];
 
                 if (block) {
-                    this._containerTetro = new PIXI.Container();
-                    this._containerTetro.addChild(
-                    this.renderBlock( //малюємо блок з наступною фігурою
-                        this._panelX + (x * this._blockWidth * 0.5), //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
-                        this._panelY + 100 + (y * this._blockHeight * 0.5), //зміщуємо фігуру додатково на 100px
-                        this._blockWidth * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
-                        this._blockHeight * 0.5, //зменшуємо розмір фігури в 2 рази відносно інших об'єктів
-                        View.colors[block],
-                        View.colors[8]));
-                    this._containerTetro.name = 'blockTetroPanel_' + y + '_' + x;
-                    this._panelFieldGr[y][x] = this._containerTetro;
-                    this._app.stage.addChild(this._panelFieldGr[y][x]);
+                    this.createBlock(x,y,block,'blockTetroPanel_',0.5,this._panelX,this._panelY + 100);
                 }
             }
         }
