@@ -10,10 +10,10 @@ export default class Controller {
     private _isPlaying: boolean;
 
     constructor(model: Model, view: View) {
-     this._model = model;
-     this._view = view;
-     this._intervalId = null;
-     this._isPlaying = false;
+        this._model = model;
+        this._view = view;
+        this._intervalId = null;
+        this._isPlaying = false;
 
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.addEventListener('keyup',this.handleKeyUp.bind(this));
@@ -118,4 +118,3 @@ export default class Controller {
         }
     }
 }
-

@@ -2,14 +2,14 @@ import {TMap} from "./Types";
 import {Points} from "./color";
 
 type TPiece = {x: number, y: number, blocks: number[][]};
-    export type TGameState = {
-        score: number,
-        level: number,
-        lines: number,
-        nextPiece: TPiece,
-        playField: number[][],
-        isGameOver: boolean
-    };
+export type TGameState = {
+    score: number,
+    level: number,
+    lines: number,
+    nextPiece: TPiece,
+    playField: number[][],
+    isGameOver: boolean
+};
 
 export default class Model {
 
@@ -136,10 +136,10 @@ export default class Model {
                 ]
                 break;
             case 'Z':piece.blocks = [
-                    [0,0,0],
-                    [7,7,0],
-                    [0,7,7]
-                ]
+                [0,0,0],
+                [7,7,0],
+                [0,7,7]
+            ]
                 break;
             default:
                 throw new Error('Невідомий тип фігури');
@@ -190,24 +190,24 @@ export default class Model {
     }
     //поворот блоку фігури
     private rotateBlocks(clockwise: boolean = true): void {
-    const blocks = this._activePiece.blocks; //доступ до блоку
-    const length = blocks.length;
-    const x = Math.floor(length / 2);
-    const y  = length - 1;
+        const blocks = this._activePiece.blocks; //доступ до блоку
+        const length = blocks.length;
+        const x = Math.floor(length / 2);
+        const y  = length - 1;
 
-    for (let i = 0; i < x; i++) {
-        for (let j = i; j < y - i; j++) {
-            const temp = blocks[i][j];
-            if (clockwise) {
-                blocks[i][j] = blocks[y - j][i];
-                blocks[y - j][i] = blocks[y - i][y - j];
-                blocks[y - i][y - j] = blocks[j][y - i];
-                blocks[j][y - i] = temp;
-            } else {
-                blocks[i][j] = blocks[j][y - i];
-                blocks[j][y - i] = blocks[y - i][y - j];
-                blocks[y - i][y - j] = blocks[y - j][i];
-                blocks[y - j][i] = temp;
+        for (let i = 0; i < x; i++) {
+            for (let j = i; j < y - i; j++) {
+                const temp = blocks[i][j];
+                if (clockwise) {
+                    blocks[i][j] = blocks[y - j][i];
+                    blocks[y - j][i] = blocks[y - i][y - j];
+                    blocks[y - i][y - j] = blocks[j][y - i];
+                    blocks[j][y - i] = temp;
+                } else {
+                    blocks[i][j] = blocks[j][y - i];
+                    blocks[j][y - i] = blocks[y - i][y - j];
+                    blocks[y - i][y - j] = blocks[y - j][i];
+                    blocks[y - j][i] = temp;
                 }
             }
         }
@@ -221,7 +221,7 @@ export default class Model {
                 if (
                     blocks[y][x] && //поле блоку не дорівнює нулю
                     ((this._playField[pieceY + y] === undefined || this._playField[pieceY + y][pieceX + x] === undefined) || //фігура не знаходиться за полем
-                    this._playField[pieceY + y][pieceX + x]) //перевірка вільного місця
+                        this._playField[pieceY + y][pieceX + x]) //перевірка вільного місця
                 ) {
                     return true;
                 }

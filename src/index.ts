@@ -12,10 +12,10 @@ declare global {
 
 const root = document.querySelector('#root');
 
-const game = new Model();
+const model = new Model();
 const view = new View(root,480,640,20,10);
-const controller = new Controller(game,view);
+const controller = new Controller(model,view);
 
-window.game = game;
+window.game = model;
 window.view = view;
 window.controller = controller;

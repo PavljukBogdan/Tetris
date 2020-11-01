@@ -1,5 +1,5 @@
 export enum Color {
-    'black'= 0x000000,
+    'black'= 0x666666,
     'cyan' = 0x00FFFF,    //'cyan',
     'blue' = 0x0000FF,   //'blue',
     'orange' = 0xFFA500,    //'orange',

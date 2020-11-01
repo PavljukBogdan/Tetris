@@ -46,21 +46,11 @@ export default class View {
     private _containerStartScreen = new PIXI.Container(); //контейнр стартового екрану
     private _containerPanelText = new PIXI.Container()
     private _styleScreen = new PIXI.TextStyle({
-        fontFamily: 'Press Start 2P',
-        fontSize: 18,
-        //fontStyle: 'italic',
-        fontWeight: 'bold',
-        fill: ['#ffffff', '#ffffff'], // gradient
-        stroke: '#4a1850',
-        strokeThickness: 5,
-        dropShadow: true,
-        dropShadowColor: '#000000',
-        dropShadowBlur: 4,
-        dropShadowAngle: Math.PI / 6,
-        dropShadowDistance: 6,
-        wordWrap: true,
-        wordWrapWidth: 440,
-        lineJoin: 'round'
+        fill: "#212121",
+        fontFamily: "Arial Black",
+        fontSize: 30,
+        stroke: "#fafafa",
+        strokeThickness: 3
     });
     private _nextLabes: PIXI.Text;
     private _linesLabes: PIXI.Text;
@@ -125,7 +115,7 @@ export default class View {
     //малюємо стартовий екран
     public renderStartScreen(): void {
         const richText = new PIXI.Text('Press ENTER to Start', this._styleScreen);
-        richText.x = 50;
+        richText.x = 60;
         richText.y = 280;
         this._containerStartScreen = new PIXI.Container();
         this._containerStartScreen.addChild(richText);
@@ -138,15 +128,24 @@ export default class View {
     //малюємо екран паузи
     public renderPauseScreen(): void {
 
-        const richText = new PIXI.Text('Press ENTER to Resume', this._styleScreen);
+        const richText = new PIXI.Text('Press ENTER', this._styleScreen);
         richText.x = 50;
         richText.y = 280;
+
+        const richText2 = new PIXI.Text('to Resume', this._styleScreen);
+        richText2.x = 73;
+        richText2.y = 320;
 
         const container = new PIXI.Container();
         container.name = 'pauseText';
         container.addChild(richText);
 
-            this._app.stage.addChild(container);
+        const container2 = new PIXI.Container();
+        container2.name = 'pauseText2';
+        container2.addChild(richText2);
+
+        this._app.stage.addChild(container);
+        this._app.stage.addChild(container2);
     }
     // видаляємо елементи екрана паузи
     public removePauseScreen(): void {
@@ -154,27 +153,40 @@ export default class View {
     }
     //створюємо елементи закінчення гри
     public renderEndScreen({score}: TGameState): void {
-        this.scoreText.text = `Score ${score}`;
-        this.restartText.text = 'Press ENTER to Restart';
+        this.scoreText.text = `Score: ${score}`;
+        this.restartText.text = 'Press ENTER';
+        this.restartText2.text = 'to Restart';
         this._app.stage.addChild(this.containerScore);
         this._app.stage.addChild(this.containerRestart);
+        this._app.stage.addChild(this.containerRestart2);
     }
     //малюємо екран закінчення гри
+    private restartText2: PIXI.Text;
+    private containerRestart2: PIXI.Container;
     private createEndScreen(): void {
         this.scoreText = new PIXI.Text('Score', this._styleScreen);
-        this.scoreText.x = 150;
-        this.scoreText.y = 280;
-        this.restartText = new PIXI.Text('Press ENTER to Restart', this._styleScreen);
-        this.restartText.x = 50;
-        this.restartText.y = 320;
+        this.scoreText.x = 90;
+        this.scoreText.y = 260;
 
         this.containerScore = new PIXI.Container();
         this.containerScore.name = 'scoreText';
         this.containerScore.addChild(this.scoreText);
 
+        this.restartText = new PIXI.Text('Press ENTER', this._styleScreen);
+        this.restartText.x = 50;
+        this.restartText.y = 300;
+
         this.containerRestart = new PIXI.Container();
         this.containerRestart.name = 'restartText';
         this.containerRestart.addChild(this.restartText);
+
+        this.restartText2 = new PIXI.Text('to Restart', this._styleScreen);
+        this.restartText2.x = 80;
+        this.restartText2.y = 340;
+
+        this.containerRestart2 = new PIXI.Container();
+        this.containerRestart2.name = 'restartText2';
+        this.containerRestart2.addChild(this.restartText2);
 
     }
     // видаляємо елементи закінчення гри
@@ -187,7 +199,7 @@ export default class View {
         for (let y = 0; y < this._gameFieldGr.length; y++) {
             const line = this._gameFieldGr[y]; //константа для зручності
             for (let x = 0; x < line.length; x++) {
-                    this._app.stage.removeChild(this._gameFieldGr[y][x]);
+                this._app.stage.removeChild(this._gameFieldGr[y][x]);
             }
         }
     }
@@ -262,7 +274,7 @@ export default class View {
     private renderPanel({level, score, lines, nextPiece}:TGameState): void {
         this._nextLabes.text = 'Next:';
         this._linesLabes.text = `Lines: ${lines}`;
-        this._scoreLabes.text = `Score ${score}`;
+        this._scoreLabes.text = `Score: ${score}`;
         this._levelLabes.text = `Level: ${level}`;
         //виводимо фігуру збоку
         this._panelFieldGr = []; //створюємо масив для зберігання графіки блоку
