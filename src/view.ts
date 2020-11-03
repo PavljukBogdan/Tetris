@@ -1,9 +1,7 @@
-import game, {TGameState} from "./model";
+import model, {TGameState} from "./model";
 import {TMap} from "./Types";
 import  * as PIXI from 'pixi.js'
 import {Color} from "./color";
-
-type TColors = TMap <number, number>;
 
 export default class View {
 
