@@ -1,12 +1,14 @@
-A simple Tetris game using Pixi.js, ES6 (Babel) and browserify.
+ A simple Tetris game using Pixi.js, ES6 (Babel) and browserify.
 
-# Open file package.json;
+#How to set up
+```
+npm install 
+npm run webpack-dev-server
+```
 
-# Run "webpack-dev-server";
+## Open http://localhost:8080/public
 
-# Open http://localhost:8080/
 
-# Open the folder "public"
 
 
 
